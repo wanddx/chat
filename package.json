@@ -1,0 +1,13 @@
+{
+  "name": "chat",
+  "version": "3.0.0",
+  "description": "secure chat",
+  "main": "chat.js",
+  "bin": {
+    "join": "./join.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  },
+  "license": "MIT"
+}
