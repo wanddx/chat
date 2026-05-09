@@ -96,7 +96,7 @@ server.listen(PORT, '0.0.0.0', () => {
 
   client.on('open', () => {
     connected = true;
-    client.send(JSON.stringify({ type:'join', payload:{ room: ROOM, name: hostName } }));
+    client.send(JSON.stringify({ type:'join', payload:{ room: PASS, name: hostName } }));
     printSystem('waiting for others.', C.yellow);
     rl.prompt();
   });
@@ -114,7 +114,7 @@ server.listen(PORT, '0.0.0.0', () => {
     }
   });
 
-  client.on('error', (e) => { printSystem(`error:${e.message}`, C.red); process.exit(1); });
+  client.on('error', (e) => { printSystem(`error ${e.message}`, C.red); process.exit(1); });
 
   rl.on('line', (line) => {
     const text = line.trim();
