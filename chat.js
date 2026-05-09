@@ -33,53 +33,7 @@ function getIP() {
 const C = { reset:'\x1b[0m', cyan:'\x1b[96m', green:'\x1b[32m', yellow:'\x1b[33m', red:'\x1b[31m', gray:'\x1b[90m', white:'\x1b[97m', bold:'\x1b[1m', blue:'\x1b[34m' };
 function ts() { return new Date().toTimeString().slice(0,8); }
 
-const rooms = new Map();
-
-function broadcast(roomId, type, payload, exclude) {
-  const members = rooms.get(roomId) || [];
-  for (const m of members) {
-    if (m !== exclude && m.readyState === 1) {
-      try { m.send(JSON.stringify({ type, payload })); } catch(e) {}
-    }
-  }
-}
-
-const server = http.createServer();
-const wss = new WebSocketServer({ server });
-
-wss.on('connection', (ws) => {
-  let roomId = null;
-  let memberName = 'anon';
-
-  ws.on('message', (data) => {
-    let msg; try { msg = JSON.parse(data); } catch(e) { return; }
-    if (msg.type === 'join') {
-      roomId = msg.payload.room;
-      memberName = msg.payload.name || 'anon';
-      if (!rooms.has(roomId)) rooms.set(roomId, []);
-      rooms.get(roomId).push(ws);
-      broadcast(roomId, 'status', { code: 'JOINED', name: memberName }, ws);
-    } else if (msg.type === 'msg') {
-      broadcast(roomId, 'msg', msg.payload, ws);
-    }
-  });
-
-  ws.on('close', () => {
-    if (roomId && rooms.has(roomId)) {
-      rooms.set(roomId, rooms.get(roomId).filter(m => m !== ws));
-      broadcast(roomId, 'status', { code: 'LEFT', name: memberName }, ws);
-      if (rooms.get(roomId).length === 0) rooms.delete(roomId);
-    }
-  });
-
-  ws.on('error', () => {});
-});
-
-server.listen(PORT, '0.0.0.0', () => {
-  const ip = getIP();
-  const hostName = 'wand';
-  console.clear();
-  const banner = [
+const BANNER = [
   "                  .n                   .                 .                  n.          ",
   "               ..dP                  dP                   9b                 9b.    .   ",
   "           4    qXb         .       dX                     Xb       .        dXp     t  ",
@@ -99,25 +53,66 @@ server.listen(PORT, '0.0.0.0', () => {
   "                                     X. 9  `   '  P )X                                  ",
   "                                     `b  `       '  d'                                  ",
   "                                      `             '                                   "
-  ];
+];
 
-  const center = (text) => {
+function printBanner(extra) {
   const width = process.stdout.columns || 80;
-  const padding = Math.max(0, Math.floor((width - text.length) / 2));
-  return ' '.repeat(padding) + text;
-  };
-
+  const center = (t) => ' '.repeat(Math.max(0, Math.floor((width - t.length) / 2))) + t;
   console.clear();
+  BANNER.forEach(line => console.log(`${C.white}${C.bold}${center(line)}${C.reset}`));
+  console.log();
+  if (extra) extra.forEach(l => console.log(l));
+  console.log();
+}
 
-  banner.forEach(line => {
-  console.log(`${C.cyan}${C.bold}${center(line)}${C.reset}`);
+const rooms = new Map();
+
+function broadcast(roomId, type, payload, exclude) {
+  const members = rooms.get(roomId) || [];
+  for (const m of members) {
+    if (m !== exclude && m.readyState === 1) {
+      try { m.send(JSON.stringify({ type, payload })); } catch(e) {}
+    }
+  }
+}
+
+const server = http.createServer();
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+  let roomId = null;
+  let memberName = 'anon';
+  ws.on('message', (data) => {
+    let msg; try { msg = JSON.parse(data); } catch(e) { return; }
+    if (msg.type === 'join') {
+      roomId = msg.payload.room;
+      memberName = msg.payload.name || 'anon';
+      if (!rooms.has(roomId)) rooms.set(roomId, []);
+      rooms.get(roomId).push(ws);
+      broadcast(roomId, 'status', { code: 'JOINED', name: memberName }, ws);
+    } else if (msg.type === 'msg') {
+      broadcast(roomId, 'msg', msg.payload, ws);
+    }
   });
+  ws.on('close', () => {
+    if (roomId && rooms.has(roomId)) {
+      rooms.set(roomId, rooms.get(roomId).filter(m => m !== ws));
+      broadcast(roomId, 'status', { code: 'LEFT', name: memberName }, ws);
+      if (rooms.get(roomId).length === 0) rooms.delete(roomId);
+    }
+  });
+  ws.on('error', () => {});
+});
 
-  console.log();
-  console.log();
-  console.log(`  ip:   ${ip}`);
-  console.log(`  port: ${PORT}`);
-  console.log(`  pass: ${PASS}\n`);
+server.listen(PORT, '0.0.0.0', () => {
+  const ip = getIP();
+  const hostName = 'wand';
+  const infoLines = [
+    `  ip:   ${C.white}${ip}${C.reset}`,
+    `  port: ${C.white}${PORT}${C.reset}`,
+    `  pass: ${C.white}${PASS}${C.reset}`
+  ];
+  printBanner(infoLines);
 
   const client = new WebSocket(`ws://localhost:${PORT}`);
   let connected = false;
@@ -126,6 +121,11 @@ server.listen(PORT, '0.0.0.0', () => {
   readline.emitKeypressEvents(process.stdin);
   if (process.stdin.isTTY) process.stdin.setRawMode(true);
 
+  process.stdout.on('resize', () => {
+    printBanner(infoLines);
+    process.stdout.write('> ' + currentInput);
+  });
+
   process.stdin.on('keypress', (ch, key) => {
     if (!key) return;
     if (key.ctrl && key.name === 'c') { console.log(`\n${C.gray}gone.${C.reset}`); process.exit(0); }
@@ -133,8 +133,7 @@ server.listen(PORT, '0.0.0.0', () => {
       const text = currentInput.trim();
       currentInput = '';
       process.stdout.write('\r\x1b[2K');
-      if (!text) return;
-      if (!connected) return;
+      if (!text || !connected) return;
       client.send(JSON.stringify({ type:'msg', payload:{ data: encrypt(JSON.stringify({ text, from: hostName })) } }));
       printLine(`${C.gray}[${ts()}] [${C.reset}${C.blue}${C.bold}${hostName}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`);
       process.stdout.write('> ');
@@ -152,10 +151,8 @@ server.listen(PORT, '0.0.0.0', () => {
     console.log(line);
     process.stdout.write('> ' + currentInput);
   }
-
-  function printMsg(who, text, own=false) {
-    const nameColor = own ? C.blue : C.white;
-    printLine(`${C.gray}[${ts()}] [${C.reset}${nameColor}${C.bold}${who}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`);
+  function printMsg(who, text) {
+    printLine(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${who}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`);
   }
   function printSystem(text, color) {
     printLine(`${C.gray}[${ts()}]${C.reset} ${color}${text}${C.reset}`);
@@ -166,7 +163,6 @@ server.listen(PORT, '0.0.0.0', () => {
     client.send(JSON.stringify({ type:'join', payload:{ room: PASS, name: hostName } }));
     process.stdout.write('> ');
   });
-
   client.on('message', (data) => {
     let msg; try { msg = JSON.parse(data); } catch(e) { return; }
     if (msg.type === 'status') {
@@ -175,10 +171,9 @@ server.listen(PORT, '0.0.0.0', () => {
     } else if (msg.type === 'msg') {
       try {
         const { text, from } = JSON.parse(decrypt(msg.payload.data));
-        printMsg(from, text, false);
+        printMsg(from, text);
       } catch(e) { printSystem('could not decrypt.', C.red); }
     }
   });
-
   client.on('error', (e) => { printSystem(`error: ${e.message}`, C.red); });
 });
