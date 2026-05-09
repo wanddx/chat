@@ -44,8 +44,8 @@ function ask(q) { return new Promise(r => setup.question(q, r)); }
 async function main() {
   printBanner();
 
-  const ip   = (await ask(`  ipv4: `)).trim();
-  const port = (await ask(`  port: `)).trim() || '1000';
+  const ip   = (await ask(`  host: `)).trim() || 'chat-production-7e44.up.railway.app';
+  const port = (await ask(`  port: `)).trim() || '443';
   const pass = (await ask(`  pass: `)).trim();
   const name = (await ask(`  name: `)).trim() || 'anon';
   setup.close();
@@ -72,7 +72,7 @@ async function main() {
 
   let currentInput = '';
   let connected = false;
-  const ws = new WebSocket(`ws://${ip}:${port}`);
+  const ws = new WebSocket(`wss://${ip}`);
 
   readline.emitKeypressEvents(process.stdin);
   if (process.stdin.isTTY) process.stdin.setRawMode(true);
@@ -122,7 +122,7 @@ async function main() {
   ws.on('message', (data) => {
     let msg; try { msg = JSON.parse(data); } catch(e) { return; }
     if (msg.type === 'status') {
-      if (msg.payload.code === 'JOINED') printSystem(`${msg.payload.name} joined.`, C.white);
+      if (msg.payload.code === 'JOINED') printSystem(`${msg.payload.name} joined.`, C.green);
       else if (msg.payload.code === 'LEFT') printSystem(`${msg.payload.name} left.`, C.red);
     } else if (msg.type === 'msg') {
       try {
