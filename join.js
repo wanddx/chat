@@ -36,7 +36,7 @@ async function main() {
     return Buffer.concat([d.update(enc), d.final()]).toString('utf8');
   }
 
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `> ` });
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `` });
 
   function printMsg(who, text, color) { clearLine(); console.log(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${who}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`); }
   function printSystem(text, color=C.yellow) { clearLine(); console.log(`${C.gray}[${ts()}]${C.reset} ${color}${text}${C.reset}`); }
