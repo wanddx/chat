@@ -88,7 +88,7 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(``);
 
   const client = new WebSocket(`ws://localhost:${PORT}`);
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `> ` });
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `` });
   let connected = false;
 
   function printMsg(who, text, color) { clearLine(); console.log(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${who}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`); }
