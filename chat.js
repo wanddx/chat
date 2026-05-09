@@ -85,14 +85,14 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`  ip:   \x1b[96m${ip}\x1b[0m`);
   console.log(`  port: \x1b[96m${PORT}\x1b[0m`);
   console.log(`  pass: \x1b[96m${PASS}\x1b[0m`);
-  console.log(`\n\x1b[90m  waiting...\x1b[0m\n`);
+  console.log(``);
 
   const client = new WebSocket(`ws://localhost:${PORT}`);
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `> ` });
   let connected = false;
 
-  function printMsg(who, text, color) { clearLine(); console.log(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${who}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`); rl.prompt(true); }
-  function printSystem(text, color=C.yellow) { clearLine(); console.log(`${C.gray}[${ts()}]${C.reset} ${color}${text}${C.reset}`); rl.prompt(true); }
+  function printMsg(who, text, color) { clearLine(); console.log(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${who}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`); }
+  function printSystem(text, color=C.yellow) { clearLine(); console.log(`${C.gray}[${ts()}]${C.reset} ${color}${text}${C.reset}`); }
 
   client.on('open', () => {
     connected = true;
