@@ -17,6 +17,7 @@ async function main() {
   const pass = (await ask(`  pass: `)).trim();
   const name = (await ask(`  name: `)).trim() || 'anon';
   setup.close();
+  process.stdin.resume();
 
   const KEY = crypto.pbkdf2Sync(pass, '8d1b65c00f12d31b2065bfb7e65e8cd884a00651749b46d921018f5e3c3b2831', 100000, 32, 'sha256');
 
