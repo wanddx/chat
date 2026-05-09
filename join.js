@@ -44,7 +44,7 @@ function ask(q) { return new Promise(r => setup.question(q, r)); }
 async function main() {
   printBanner();
 
-  const ip   = (await ask(`  ip:   `)).trim();
+  const ip   = (await ask(`  ipv4: `)).trim();
   const port = (await ask(`  port: `)).trim() || '1000';
   const pass = (await ask(`  pass: `)).trim();
   const name = (await ask(`  name: `)).trim() || 'anon';
@@ -122,7 +122,7 @@ async function main() {
   ws.on('message', (data) => {
     let msg; try { msg = JSON.parse(data); } catch(e) { return; }
     if (msg.type === 'status') {
-      if (msg.payload.code === 'JOINED') printSystem(`${msg.payload.name} joined.`, C.green);
+      if (msg.payload.code === 'JOINED') printSystem(`${msg.payload.name} joined.`, C.white);
       else if (msg.payload.code === 'LEFT') printSystem(`${msg.payload.name} left.`, C.red);
     } else if (msg.type === 'msg') {
       try {
