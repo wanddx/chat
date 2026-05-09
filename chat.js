@@ -57,15 +57,13 @@ const ascii = [
 ];
 
 function printBanner(info = {}) {
-  const width = process.stdout.columns || 80;
-  const center = (t) => ' '.repeat(Math.max(0, Math.floor((width - t.length) / 2))) + t;
   console.clear();
   ascii.forEach(line => {
     const filled = line
       .replace('{IP}',   (info.ip   || '').padEnd(15))
       .replace('{PORT}', (info.port || '').padEnd(15))
       .replace('{PASS}', (info.pass || '').padEnd(15));
-    console.log(`${C.white}${C.bold}${center(filled)}${C.reset}`);
+    console.log(`${C.white}${C.bold}${filled}${C.reset}`);
   });
   console.log();
 }
