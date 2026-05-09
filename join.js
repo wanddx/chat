@@ -36,7 +36,7 @@ async function main() {
     return Buffer.concat([d.update(enc), d.final()]).toString('utf8');
   }
 
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `${C.cyan}${name}> ${C.reset}` });
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `${C.cyan}${name}: ${C.reset}` });
 
   function printMsg(who, text, color) { clearLine(); console.log(`${C.gray}[${ts()}]${C.reset} ${color}${C.bold}${who}${C.reset} ${C.white}${text}${C.reset}`); rl.prompt(true); }
   function printSystem(text, color=C.yellow) { clearLine(); console.log(`${C.gray}[${ts()}]${C.reset} ${color}${text}${C.reset}`); rl.prompt(true); }
@@ -46,7 +46,7 @@ async function main() {
   ws.on('open', () => {
     ws.send(JSON.stringify({ type:'join', payload:{ room: pass, name } }));
     console.clear();
-    printSystem(`joined as ${C.cyan}${C.bold}${name}${C.reset}${C.yellow}.`, C.yellow);
+    printSystem(`joined as ${C.bold}${name}${C.reset}.`);
     rl.prompt();
   });
 
