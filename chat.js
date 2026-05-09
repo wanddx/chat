@@ -165,7 +165,7 @@ server.listen(PORT, '0.0.0.0', () => {
   client.on('message', (data) => {
     let msg; try { msg = JSON.parse(data); } catch(e) { return; }
     if (msg.type === 'status') {
-      if (msg.payload.code === 'JOINED') printSystem(`${msg.payload.name} joined.`, C.blue);
+      if (msg.payload.code === 'JOINED') printSystem(`${msg.payload.name} joined.`, C.white);
       else if (msg.payload.code === 'LEFT') printSystem(`${msg.payload.name} left.`, C.red);
     } else if (msg.type === 'msg') {
       try {
