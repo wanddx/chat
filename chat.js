@@ -4,7 +4,7 @@ const readline = require('readline');
 const http = require('http');
 const os = require('os');
 
-const PORT = process.env.PORT || 1000;
+const PORT = 1000;
 const PASS = crypto.randomBytes(8).toString('hex');
 const KEY  = crypto.pbkdf2Sync(PASS, '8d1b65c00f12d31b2065bfb7e65e8cd884a00651749b46d921018f5e3c3b2831', 100000, 32, 'sha256');
 
@@ -62,8 +62,7 @@ function printBanner(info = {}) {
   asciiTop.forEach(line => console.log(`${C.white}${C.bold}${center(line)}${C.reset}`));
   console.log();
   console.log(`  link: npx github:wanddx/chat join`);
-  console.log(`  ipv4: ${info.ip   || ''}`);
-  console.log(`  port: ${info.port || ''}`);
+  console.log(`  host: chat-production-7e44.up.railway.app`);
   console.log(`  pass: ${info.pass || ''}`);
   console.log();
 }
@@ -108,9 +107,8 @@ wss.on('connection', (ws) => {
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-  const ip = getIP();
   const hostName = 'wand';
-  const bannerInfo = { ip, port: String(PORT), pass: PASS };
+  const bannerInfo = { pass: PASS };
   printBanner(bannerInfo);
 
   const client = new WebSocket(`ws://localhost:${PORT}`);
