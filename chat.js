@@ -33,7 +33,7 @@ function getIP() {
 const C = { reset:'\x1b[0m', cyan:'\x1b[96m', green:'\x1b[32m', yellow:'\x1b[33m', red:'\x1b[31m', gray:'\x1b[90m', white:'\x1b[97m', bold:'\x1b[1m', blue:'\x1b[34m' };
 function ts() { return new Date().toTimeString().slice(0,8); }
 
-const ascii = [
+const asciiTop = [
   "                  .n                   .                 .                  n.          ",
   "               ..dP                  dP                   9b                 9b.    .   ",
   "           4    qXb         .       dX                     Xb       .        dXp     t  ",
@@ -51,20 +51,19 @@ const ascii = [
   "                                     XXXX X.`v'.X XXXX                                  ",
   "                                     XP^X'`b   d'`X^XX                                  ",
   "                                     X. 9  `   '  P )X                                  ",
-  "  ipv4: {IP}                         `b  `       '  d'                                  ",
-  "  port: {PORT}                        `             '                                   ",
-  "  pass: {PASS}                        `             '                                   "
+  "                                     `b  `       '  d'                                  ",
+  "                                      `             '                                   "
 ];
 
 function printBanner(info = {}) {
+  const width = process.stdout.columns || 80;
+  const center = (t) => ' '.repeat(Math.max(0, Math.floor((width - t.length) / 2))) + t;
   console.clear();
-  ascii.forEach(line => {
-    const filled = line
-      .replace('{IP}',   (info.ip   || '').padEnd(15))
-      .replace('{PORT}', (info.port || '').padEnd(15))
-      .replace('{PASS}', (info.pass || '').padEnd(15));
-    console.log(`${C.white}${C.bold}${filled}${C.reset}`);
-  });
+  asciiTop.forEach(line => console.log(`${C.white}${C.bold}${center(line)}${C.reset}`));
+  console.log();
+  if (info.ip)   console.log(`  ${C.gray}ipv4:${C.reset} ${C.white}${info.ip}${C.reset}`);
+  if (info.port) console.log(`  ${C.gray}port:${C.reset} ${C.white}${info.port}${C.reset}`);
+  if (info.pass) console.log(`  ${C.gray}pass:${C.reset} ${C.white}${info.pass}${C.reset}`);
   console.log();
 }
 
