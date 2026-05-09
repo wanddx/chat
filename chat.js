@@ -79,16 +79,50 @@ server.listen(PORT, '0.0.0.0', () => {
   const ip = getIP();
   const hostName = 'wand';
   console.clear();
-  console.log(`${C.cyan}${C.bold}  share these with your friends:${C.reset}\n`);
-  console.log(`  ip:   ${C.cyan}${ip}${C.reset}`);
-  console.log(`  port: ${C.cyan}${PORT}${C.reset}`);
-  console.log(`  pass: ${C.cyan}${PASS}${C.reset}\n`);
+  const banner = [
+  "                  .n                   .                 .                  n.          ",
+  "               ..dP                  dP                   9b                 9b.    .   ",
+  "           4    qXb         .       dX                     Xb       .        dXp     t  ",
+  "          dX.    9Xb      .dXb    __                         __    dXb.     dXP     .9Xb",
+  "        9XXb._       _.dXXXXb dXXXXbo.                 .odXXXXb dXXXXb._       _.dXXP   ",
+  "         9XXXXXXXXXXXXXXXXXXXVXXXXXXXXOo.           .oOXXXXXXXXVXXXXXXXXXXXXXXXXXXXP    ",
+  "         `9XXXXXXXXXXXXXXXXXXXXX'~   ~`OOO8b   d8OOO'~   ~`XXXXXXXXXXXXXXXXXXXXXP'      ",
+  "               ~~~~~~~       9X.          .db|db.          .XP       ~~~~~~~            ",
+  "                               )b.  .dbo.dP'`v'`9b.odb.  .dX(                           ",
+  "                             ,dXXXXXXXXXXXb     dXXXXXXXXXXXb.                          ",
+  "                            dXXXXXXXXXXXP'   .   `9XXXXXXXXXXXb                         ",
+  "                           dXXXXXXXXXXXXb   d|b   dXXXXXXXXXXXXb                        ",
+  "                           9XXb'   `XXXXXb.dX|Xb.dXXXXX'   `dXXP                        ",
+  "                            `'      9XXXXXX(   )XXXXXXP      `'                         ",
+  "                                     XXXX X.`v'.X XXXX                                  ",
+  "                                     XP^X'`b   d'`X^XX                                  ",
+  "                                     X. 9  `   '  P )X                                  ",
+  "                                     `b  `       '  d'                                  ",
+  "                                      `             '                                   "
+  ];
+
+  const center = (text) => {
+  const width = process.stdout.columns || 80;
+  const padding = Math.max(0, Math.floor((width - text.length) / 2));
+  return ' '.repeat(padding) + text;
+  };
+
+  console.clear();
+
+  banner.forEach(line => {
+  console.log(`${C.cyan}${C.bold}${center(line)}${C.reset}`);
+  });
+
+  console.log();
+  console.log();
+  console.log(`  ip:   ${ip}`);
+  console.log(`  port: ${PORT}`);
+  console.log(`  pass: ${PASS}\n`);
 
   const client = new WebSocket(`ws://localhost:${PORT}`);
   let connected = false;
   let currentInput = '';
 
-  // intercept keypresses to track what user is typing
   readline.emitKeypressEvents(process.stdin);
   if (process.stdin.isTTY) process.stdin.setRawMode(true);
 
