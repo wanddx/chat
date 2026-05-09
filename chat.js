@@ -33,7 +33,7 @@ function getIP() {
 const C = { reset:'\x1b[0m', cyan:'\x1b[96m', green:'\x1b[32m', yellow:'\x1b[33m', red:'\x1b[31m', gray:'\x1b[90m', white:'\x1b[97m', bold:'\x1b[1m', blue:'\x1b[34m' };
 function ts() { return new Date().toTimeString().slice(0,8); }
 
-const BANNER = [
+const ascii = [
   "                  .n                   .                 .                  n.          ",
   "               ..dP                  dP                   9b                 9b.    .   ",
   "           4    qXb         .       dX                     Xb       .        dXp     t  ",
@@ -51,17 +51,22 @@ const BANNER = [
   "                                     XXXX X.`v'.X XXXX                                  ",
   "                                     XP^X'`b   d'`X^XX                                  ",
   "                                     X. 9  `   '  P )X                                  ",
-  "                                     `b  `       '  d'                                  ",
-  "                                      `             '                                   "
+  "  ipv4: {IP}                         `b  `       '  d'                                  ",
+  "  port: {PORT}                        `             '                                   ",
+  "  pass: {PASS}                        `             '                                   "
 ];
 
-function printBanner(extra) {
+function printBanner(info = {}) {
   const width = process.stdout.columns || 80;
   const center = (t) => ' '.repeat(Math.max(0, Math.floor((width - t.length) / 2))) + t;
   console.clear();
-  BANNER.forEach(line => console.log(`${C.white}${C.bold}${center(line)}${C.reset}`));
-  console.log();
-  if (extra) extra.forEach(l => console.log(l));
+  ascii.forEach(line => {
+    const filled = line
+      .replace('{IP}',   (info.ip   || '').padEnd(15))
+      .replace('{PORT}', (info.port || '').padEnd(15))
+      .replace('{PASS}', (info.pass || '').padEnd(15));
+    console.log(`${C.white}${C.bold}${center(filled)}${C.reset}`);
+  });
   console.log();
 }
 
@@ -107,12 +112,8 @@ wss.on('connection', (ws) => {
 server.listen(PORT, '0.0.0.0', () => {
   const ip = getIP();
   const hostName = 'wand';
-  const infoLines = [
-    `  ip:   ${C.white}${ip}${C.reset}`,
-    `  port: ${C.white}${PORT}${C.reset}`,
-    `  pass: ${C.white}${PASS}${C.reset}`
-  ];
-  printBanner(infoLines);
+  const bannerInfo = { ip, port: String(PORT), pass: PASS };
+  printBanner(bannerInfo);
 
   const client = new WebSocket(`ws://localhost:${PORT}`);
   let connected = false;
@@ -122,7 +123,7 @@ server.listen(PORT, '0.0.0.0', () => {
   if (process.stdin.isTTY) process.stdin.setRawMode(true);
 
   process.stdout.on('resize', () => {
-    printBanner(infoLines);
+    printBanner(bannerInfo);
     process.stdout.write('> ' + currentInput);
   });
 
