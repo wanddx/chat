@@ -79,16 +79,14 @@ wss.on('connection', (ws) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   const ip = getIP();
-  const hostName = 'host';
+  const hostName = 'wand';
   console.clear();
-  console.log(`\x1b[96m\x1b[1m  share these with your friends:\x1b[0m\n`);
-  console.log(`  ip:   \x1b[96m${ip}\x1b[0m`);
-  console.log(`  port: \x1b[96m${PORT}\x1b[0m`);
-  console.log(`  pass: \x1b[96m${PASS}\x1b[0m`);
-  console.log(`\n\x1b[90m  waiting...\x1b[0m\n`);
+  console.log(`ipv4 : \x1b[96m${ip}\x1b[0m`);
+  console.log(`port : \x1b[96m${PORT}\x1b[0m`);
+  console.log(`pass : \x1b[96m${PASS}\x1b[0m`);
 
   const client = new WebSocket(`ws://localhost:${PORT}`);
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `${C.cyan}${hostName}> ${C.reset}` });
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `${C.cyan}${hostName}: ${C.reset}` });
   let connected = false;
 
   function printMsg(who, text, color) { clearLine(); console.log(`${C.gray}[${ts()}]${C.reset} ${color}${C.bold}${who}${C.reset} ${C.white}${text}${C.reset}`); rl.prompt(true); }
@@ -114,7 +112,7 @@ server.listen(PORT, '0.0.0.0', () => {
     }
   });
 
-  client.on('error', (e) => { printSystem(`error ${e.message}`, C.red); process.exit(1); });
+  client.on('error', (e) => { printSystem(`error:${e.message}`, C.red); process.exit(1); });
 
   rl.on('line', (line) => {
     const text = line.trim();
