@@ -36,9 +36,9 @@ async function main() {
     return Buffer.concat([d.update(enc), d.final()]).toString('utf8');
   }
 
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `${C.cyan}${name}: ${C.reset}` });
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `> ` });
 
-  function printMsg(who, text, color) { clearLine(); console.log(`${C.gray}[${ts()}]${C.reset} ${color}${C.bold}${who}${C.reset} ${C.white}${text}${C.reset}`); rl.prompt(true); }
+  function printMsg(who, text, color) { clearLine(); console.log(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${who}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`); rl.prompt(true); }
   function printSystem(text, color=C.yellow) { clearLine(); console.log(`${C.gray}[${ts()}]${C.reset} ${color}${text}${C.reset}`); rl.prompt(true); }
 
   const ws = new WebSocket(`ws://${ip}:${port}`);
@@ -46,7 +46,7 @@ async function main() {
   ws.on('open', () => {
     ws.send(JSON.stringify({ type:'join', payload:{ room: pass, name } }));
     console.clear();
-    printSystem(`joined as ${C.bold}${name}${C.reset}.`);
+    printSystem(`joined as ${C.cyan}${C.bold}${name}${C.reset}${C.yellow}.`, C.yellow);
     rl.prompt();
   });
 
@@ -71,7 +71,7 @@ async function main() {
     if (!text) { rl.prompt(); return; }
     ws.send(JSON.stringify({ type:'msg', payload:{ data: encrypt(JSON.stringify({ text, from: name })) } }));
     clearLine();
-    console.log(`${C.gray}[${ts()}]${C.reset} ${C.green}${C.bold}${name}${C.reset} ${text}`);
+    console.log(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${name}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`);
     rl.prompt();
   });
   rl.on('close', () => { console.log(`\n${C.gray}gone.${C.reset}`); ws.close(); process.exit(0); });
