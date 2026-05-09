@@ -4,7 +4,7 @@ const readline = require('readline');
 const http = require('http');
 const os = require('os');
 
-const PORT = 1000;
+const PORT = process.env.PORT || 1000;
 const PASS = crypto.randomBytes(8).toString('hex');
 const KEY  = crypto.pbkdf2Sync(PASS, '8d1b65c00f12d31b2065bfb7e65e8cd884a00651749b46d921018f5e3c3b2831', 100000, 32, 'sha256');
 
@@ -40,19 +40,19 @@ const asciiTop = [
   "          dX.    9Xb      .dXb    __                         __    dXb.     dXP     .9Xb",
   "        9XXb._       _.dXXXXb dXXXXbo.                 .odXXXXb dXXXXb._       _.dXXP   ",
   "         9XXXXXXXXXXXXXXXXXXXVXXXXXXXXOo.           .oOXXXXXXXXVXXXXXXXXXXXXXXXXXXXP    ",
-  "         `9XXXXXXXXXXXXXXXXXXXXX'~   ~`OOO8b   d8OOO'~   ~`XXXXXXXXXXXXXXXXXXXXXP'      ",
+  "         \`9XXXXXXXXXXXXXXXXXXXXX'~   ~\`OOO8b   d8OOO'~   ~\`XXXXXXXXXXXXXXXXXXXXXP'      ",
   "               ~~~~~~~       9X.          .db|db.          .XP       ~~~~~~~            ",
-  "                               )b.  .dbo.dP'`v'`9b.odb.  .dX(                           ",
+  "                               )b.  .dbo.dP'\`v'\`9b.odb.  .dX(                           ",
   "                             ,dXXXXXXXXXXXb     dXXXXXXXXXXXb.                          ",
-  "                            dXXXXXXXXXXXP'   .   `9XXXXXXXXXXXb                         ",
+  "                            dXXXXXXXXXXXP'   .   \`9XXXXXXXXXXXb                         ",
   "                           dXXXXXXXXXXXXb   d|b   dXXXXXXXXXXXXb                        ",
-  "                           9XXb'   `XXXXXb.dX|Xb.dXXXXX'   `dXXP                        ",
-  "                            `'      9XXXXXX(   )XXXXXXP      `'                         ",
-  "                                     XXXX X.`v'.X XXXX                                  ",
-  "                                     XP^X'`b   d'`X^XX                                  ",
-  "                                     X. 9  `   '  P )X                                  ",
-  "                                     `b  `       '  d'                                  ",
-  "                                      `             '                                   "
+  "                           9XXb'   \`XXXXXb.dX|Xb.dXXXXX'   \`dXXP                        ",
+  "                            \`'      9XXXXXX(   )XXXXXXP      \`'                         ",
+  "                                     XXXX X.\`v'.X XXXX                                  ",
+  "                                     XP^X'\`b   d'\`X^XX                                  ",
+  "                                     X. 9  \`   '  P )X                                  ",
+  "                                     \`b  \`       '  d'                                  ",
+  "                                      \`             '                                   "
 ];
 
 function printBanner(info = {}) {
