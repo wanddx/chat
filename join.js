@@ -44,7 +44,7 @@ function ask(q) { return new Promise(r => setup.question(q, r)); }
 async function main() {
   printBanner();
 
-  const ip   = (await ask(`  ipv4: `)).trim();
+  const ip   = (await ask(`  ip:   `)).trim();
   const port = (await ask(`  port: `)).trim() || '1000';
   const pass = (await ask(`  pass: `)).trim();
   const name = (await ask(`  name: `)).trim() || 'anon';
@@ -71,6 +71,7 @@ async function main() {
   printBanner();
 
   let currentInput = '';
+  let connected = false;
   const ws = new WebSocket(`ws://${ip}:${port}`);
 
   readline.emitKeypressEvents(process.stdin);
@@ -88,7 +89,7 @@ async function main() {
       const text = currentInput.trim();
       currentInput = '';
       process.stdout.write('\r\x1b[2K');
-      if (!text) return;
+      if (!text || !connected) return;
       ws.send(JSON.stringify({ type:'msg', payload:{ data: encrypt(JSON.stringify({ text, from: name })) } }));
       printLine(`${C.gray}[${ts()}] [${C.reset}${C.blue}${C.bold}${name}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`);
       process.stdout.write('> ');
@@ -114,13 +115,14 @@ async function main() {
   }
 
   ws.on('open', () => {
+    connected = true;
     ws.send(JSON.stringify({ type:'join', payload:{ room: pass, name } }));
     process.stdout.write('> ');
   });
   ws.on('message', (data) => {
     let msg; try { msg = JSON.parse(data); } catch(e) { return; }
     if (msg.type === 'status') {
-      if (msg.payload.code === 'JOINED') printSystem(`${msg.payload.name} joined.`, C.blue);
+      if (msg.payload.code === 'JOINED') printSystem(`${msg.payload.name} joined.`, C.green);
       else if (msg.payload.code === 'LEFT') printSystem(`${msg.payload.name} left.`, C.red);
     } else if (msg.type === 'msg') {
       try {
