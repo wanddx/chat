@@ -45,7 +45,6 @@ async function main() {
   printBanner();
 
   const ip   = (await ask(`  host: `)).trim() || 'chat-production-7e44.up.railway.app';
-  const port = (await ask(`  port: `)).trim() || '443';
   const pass = (await ask(`  pass: `)).trim();
   const name = (await ask(`  name: `)).trim() || 'anon';
   setup.close();
