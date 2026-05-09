@@ -30,7 +30,7 @@ function getIP() {
   return 'localhost';
 }
 
-const C = { reset:'\x1b[0m', cyan:'\x1b[96m', green:'\x1b[32m', yellow:'\x1b[33m', red:'\x1b[31m', gray:'\x1b[90m', white:'\x1b[97m', bold:'\x1b[1m' };
+const C = { reset:'\x1b[0m', cyan:'\x1b[96m', green:'\x1b[32m', yellow:'\x1b[33m', red:'\x1b[31m', gray:'\x1b[90m', white:'\x1b[97m', bold:'\x1b[1m', blue:'\x1b[34m' };
 function ts() { return new Date().toTimeString().slice(0,8); }
 
 const rooms = new Map();
@@ -102,7 +102,8 @@ server.listen(PORT, '0.0.0.0', () => {
       if (!text) return;
       if (!connected) return;
       client.send(JSON.stringify({ type:'msg', payload:{ data: encrypt(JSON.stringify({ text, from: hostName })) } }));
-      console.log(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${hostName}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`);
+      printLine(`${C.gray}[${ts()}] [${C.reset}${C.blue}${C.bold}${hostName}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`);
+      process.stdout.write('> ');
     } else if (key.name === 'backspace') {
       currentInput = currentInput.slice(0, -1);
       process.stdout.write('\r\x1b[2K> ' + currentInput);
@@ -118,8 +119,9 @@ server.listen(PORT, '0.0.0.0', () => {
     process.stdout.write('> ' + currentInput);
   }
 
-  function printMsg(who, text) {
-    printLine(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${who}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`);
+  function printMsg(who, text, own=false) {
+    const nameColor = own ? C.blue : C.white;
+    printLine(`${C.gray}[${ts()}] [${C.reset}${nameColor}${C.bold}${who}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`);
   }
   function printSystem(text, color) {
     printLine(`${C.gray}[${ts()}]${C.reset} ${color}${text}${C.reset}`);
@@ -139,7 +141,7 @@ server.listen(PORT, '0.0.0.0', () => {
     } else if (msg.type === 'msg') {
       try {
         const { text, from } = JSON.parse(decrypt(msg.payload.data));
-        printMsg(from, text);
+        printMsg(from, text, false);
       } catch(e) { printSystem('could not decrypt.', C.red); }
     }
   });
