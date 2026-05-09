@@ -39,6 +39,8 @@ async function main() {
 
   let currentInput = '';
 
+  const ws = new WebSocket(`ws://${ip}:${port}`);
+
   readline.emitKeypressEvents(process.stdin);
   if (process.stdin.isTTY) process.stdin.setRawMode(true);
 
@@ -73,8 +75,6 @@ async function main() {
   function printSystem(text, color) {
     printLine(`${C.gray}[${ts()}]${C.reset} ${color}${text}${C.reset}`);
   }
-
-  const ws = new WebSocket(`ws://${ip}:${port}`);
 
   ws.on('open', () => {
     ws.send(JSON.stringify({ type:'join', payload:{ room: pass, name } }));
