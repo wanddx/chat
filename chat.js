@@ -4,7 +4,7 @@ const readline = require('readline');
 const http = require('http');
 const os = require('os');
 
-const PORT = 1000;
+const PORT = process.env.PORT || 1000;
 const PASS = crypto.randomBytes(8).toString('hex');
 const KEY  = crypto.pbkdf2Sync(PASS, '8d1b65c00f12d31b2065bfb7e65e8cd884a00651749b46d921018f5e3c3b2831', 100000, 32, 'sha256');
 
@@ -165,7 +165,7 @@ server.listen(PORT, '0.0.0.0', () => {
   client.on('message', (data) => {
     let msg; try { msg = JSON.parse(data); } catch(e) { return; }
     if (msg.type === 'status') {
-      if (msg.payload.code === 'JOINED') printSystem(`${msg.payload.name} joined.`, C.white);
+      if (msg.payload.code === 'JOINED') printSystem(`${msg.payload.name} joined.`, C.green);
       else if (msg.payload.code === 'LEFT') printSystem(`${msg.payload.name} left.`, C.red);
     } else if (msg.type === 'msg') {
       try {
