@@ -81,21 +81,22 @@ server.listen(PORT, '0.0.0.0', () => {
   const ip = getIP();
   const hostName = 'wand';
   console.clear();
-  console.log(`ipv4 : \x1b[96m${ip}\x1b[0m`);
-  console.log(`port : \x1b[96m${PORT}\x1b[0m`);
-  console.log(`pass : \x1b[96m${PASS}\x1b[0m`);
+  console.log(`\x1b[96m\x1b[1m  share these with your friends:\x1b[0m\n`);
+  console.log(`  ip:   \x1b[96m${ip}\x1b[0m`);
+  console.log(`  port: \x1b[96m${PORT}\x1b[0m`);
+  console.log(`  pass: \x1b[96m${PASS}\x1b[0m`);
+  console.log(`\n\x1b[90m  waiting...\x1b[0m\n`);
 
   const client = new WebSocket(`ws://localhost:${PORT}`);
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `${C.cyan}${hostName}: ${C.reset}` });
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true, prompt: `> ` });
   let connected = false;
 
-  function printMsg(who, text, color) { clearLine(); console.log(`${C.gray}[${ts()}]${C.reset} ${color}${C.bold}${who}${C.reset} ${C.white}${text}${C.reset}`); rl.prompt(true); }
+  function printMsg(who, text, color) { clearLine(); console.log(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${who}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`); rl.prompt(true); }
   function printSystem(text, color=C.yellow) { clearLine(); console.log(`${C.gray}[${ts()}]${C.reset} ${color}${text}${C.reset}`); rl.prompt(true); }
 
   client.on('open', () => {
     connected = true;
     client.send(JSON.stringify({ type:'join', payload:{ room: PASS, name: hostName } }));
-    printSystem('waiting for others.', C.yellow);
     rl.prompt();
   });
 
@@ -120,7 +121,7 @@ server.listen(PORT, '0.0.0.0', () => {
     if (!connected) { printSystem('not connected yet.', C.yellow); rl.prompt(); return; }
     client.send(JSON.stringify({ type:'msg', payload:{ data: encrypt(JSON.stringify({ text, from: hostName })) } }));
     clearLine();
-    console.log(`${C.gray}[${ts()}]${C.reset} ${C.green}${C.bold}${hostName}${C.reset} ${text}`);
+    console.log(`${C.gray}[${ts()}] [${C.reset}${C.white}${C.bold}${hostName}${C.reset}${C.gray}]${C.reset} ${C.white}${text}${C.reset}`);
     rl.prompt();
   });
 
