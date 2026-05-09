@@ -61,9 +61,10 @@ function printBanner(info = {}) {
   console.clear();
   asciiTop.forEach(line => console.log(`${C.white}${C.bold}${center(line)}${C.reset}`));
   console.log();
-  if (info.ip)   console.log(`  ${C.gray}ipv4:${C.reset} ${C.white}${info.ip}${C.reset}`);
-  if (info.port) console.log(`  ${C.gray}port:${C.reset} ${C.white}${info.port}${C.reset}`);
-  if (info.pass) console.log(`  ${C.gray}pass:${C.reset} ${C.white}${info.pass}${C.reset}`);
+  console.log(`  link: npx github:wanddx/chat join`);
+  console.log(`  ipv4: ${info.ip   || ''}`);
+  console.log(`  port: ${info.port || ''}`);
+  console.log(`  pass: ${info.pass || ''}`);
   console.log();
 }
 
